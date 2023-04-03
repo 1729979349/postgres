@@ -1,0 +1,155 @@
+<!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+	<contextName>${app_name}</contextName>
+	<property name="app_name" value="postgres" />
+	<!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 -->
+	<!-- springboot 2.3.2需要加入 -->
+	<springProperty name="LOG_PATH" source="logging.file.path" defaultValue="./logs/${app_name}" />
+	<springProperty name="LOG_PATTERN" source="logging.pattern.file" defaultValue="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />
+	<property name="LOG_HOME" value="${LOG_PATH}" />
+	<property name="LOG_FILE" value="${LOG_PATH}/spring.log" />
+	<property name="PATTERN" value="${LOG_PATTERN}" />
+	<springProfile name="test,dev">
+		<property name="LOG_LEVEL" value="DEBUG" />
+	</springProfile>
+	<springProfile name="prod">
+		<property name="LOG_LEVEL" value="INFO" />
+	</springProfile>
+
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<!-- out to console -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>
+				${logging.pattern.console}
+			</pattern>
+		</layout>
+	</appender>
+
+	<appender name="MAIN"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/main.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/main.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="FACADE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/facade.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/facade.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="UTILS"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/utils.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/utils.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="DAL"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/dal.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/dal.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<appender name="WEB"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/web.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/web.%d{yyyy-MM-dd}.log.gz
+			</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<appender name="CROKY"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/croky.log</file>
+		<encoder>
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_HOME}/croky.%d{yyyy-MM-dd}.log.gz
+			</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>20MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	<logger name="org.mybatis" level="${LOG_LEVEL}" >
+		<appender-ref ref="DAL" />
+	</logger>
+	<logger name="com.mysql" level="${LOG_LEVEL}" >
+		<appender-ref ref="DAL" />
+	</logger>
+	<logger name="org.springframework.jdbc" level="${LOG_LEVEL}" >
+		<appender-ref ref="DAL" />
+	</logger>
+	<logger name="com.croky.postgres.dal" level="${LOG_LEVEL}">
+		<appender-ref ref="DAL" />
+	</logger>
+	<logger name="com.croky.postgres.main" level="${LOG_LEVEL}">
+		<appender-ref ref="MAIN" />
+	</logger>
+	<logger name="com.croky.postgres.facade" level="${LOG_LEVEL}">
+		<appender-ref ref="FACADE" />
+	</logger>
+	<logger name="com.croky.postgres.utils" level="${LOG_LEVEL}">
+		<appender-ref ref="UTILS" />
+	</logger>
+	<logger name="com.croky.postgres.web" level="${LOG_LEVEL}">
+		<appender-ref ref="WEB" />
+	</logger>
+	<!--
+	<root level="${LOG_LEVEL}">
+		<appender-ref ref="STDOUT" />
+	</root>
+	-->
+</configuration>

@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SpringBoot模版渲染</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+</head>
+<body>
+	<center><h2>thymeleaf测试</h2></center>
+	<div>
+	    <p th:text="'用户编号：' + ${user.id}"/>
+	    <p th:text="'用户账户：' + ${user.account}"/>
+	    <p th:utext="'用户昵称：' + ${user.nick}"/>
+	</div>
+	<div th:object="${user}">
+	    <p th:text="'用户编号：' + *{id}"/>
+	    <p th:text="'用户账户：' + *{account}"/>
+	    <p th:utext="'用户昵称：' + *{nick}"/>
+	</div>
+</body>
+</html>
